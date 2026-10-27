@@ -1,14 +1,14 @@
-﻿using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-
-namespace ThermalController;
+﻿namespace ThermalController;
 
 public class ThermalController
 {
-    // signal .NET that this function can be called by an unmanaged func pointer
-    // must be static and only blittable params
-    [UnmanagedCallersOnly(CallConvs = new[] {typeof(CallConvCdecl)})]
-    public static double CalculatePower(double temperature){
-        return temperature < 50.0 ? 100.0 : 0.0;
+    private readonly double targetTemperature;
+
+    public ThermalController(double targetTemperature)
+    {
+        this.targetTemperature = targetTemperature;
+    }
+    public double CalculatePower(double temperature){
+        return temperature < targetTemperature ? 100.0 : 0.0;
     }
 }

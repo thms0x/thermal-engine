@@ -7,9 +7,13 @@
 #include <hostfxr.h>
 #include <coreclr_delegates.h>
 
+#include "ManagedController.hpp"
+
 namespace fs = std::filesystem;
 
-using PowerFunction = double (*)(double);
+using CreateFn = void* (*)(double);
+using CalculateFn = double (*)(void*, double);
+using DestroyFn = void (*)(void*);
 
 int main()
 {
@@ -72,26 +76,72 @@ int main()
     auto load = reinterpret_cast<load_assembly_and_get_function_pointer_fn>(
         loader);
 
-    // get c# method
-    PowerFunction calculatePower = nullptr;
+    // get c# methods
+    //create()
+    void* createAddress = nullptr;
 
     rc = load(
         assembly.c_str(),
-        "ThermalController.ThermalController, ThermalController",
-        "CalculatePower",
+        "ThermalController.ThermalControllerApi, ThermalController",
+        "Create",
         UNMANAGEDCALLERSONLY_METHOD,
         nullptr,
-        reinterpret_cast<void**>(&calculatePower)
+        &createAddress
     );
 
-    if (rc != 0 || !calculatePower) {
-        std::cerr << "Could not load C# method: " << rc << '\n';
+    if (rc != 0 || !createAddress) {
+        std::cerr << "Failed to resolve Create\n";
         return 1;
     }
 
-    // call c# method
-    std::cout << calculatePower(30.0) << '\n';
-    std::cout << calculatePower(70.0) << '\n';
+    auto create = reinterpret_cast<CreateFn>(createAddress);
 
-    return 0;
+    //calculate()
+    void* calculateAdress = nullptr;
+
+    rc = load(
+        assembly.c_str(),
+        "ThermalController.ThermalControllerApi, ThermalController",
+        "Calculate",
+        UNMANAGEDCALLERSONLY_METHOD,
+        nullptr,
+        &calculateAdress
+    );
+
+    if (rc != 0 || !calculateAdress) {
+        std::cerr << "Failed to resolve Calculate\n";
+        return 1;
+    }
+
+    auto calculate = reinterpret_cast<CalculateFn>(calculateAdress);
+
+    //Destroy()
+    void* destroyAdress = nullptr;
+
+    rc = load(
+        assembly.c_str(),
+        "ThermalController.ThermalControllerApi, ThermalController",
+        "Destroy",
+        UNMANAGEDCALLERSONLY_METHOD,
+        nullptr,
+        &destroyAdress
+    );
+
+    if (rc != 0 || !destroyAdress) {
+        std::cerr << "Failed to resolve Destroy\n";
+        return 1;
+    }
+
+    auto destroy = reinterpret_cast<DestroyFn>(destroyAdress);
+
+
+    // call c# method
+    ManagedController first{create(50.0), calculate, destroy};
+    ManagedController second{create(80.0), calculate, destroy};
+
+    std::cout << first.calculatePower(60.0) << '\n';
+    std::cout << second.calculatePower(60.0) << '\n';
+
+    // both destructors are automatically called here, so the gc on the c# side picks it up.
+    
 }
