@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.20)
 project(thermal-engine LANGUAGES CXX)
 
-add_library(thermal_core STATIC 
+add_library(thermal_core SHARED 
     src/ThermalSystem.cpp
+    src/SimulationRunner.cpp
 )
 
 target_compile_features(thermal_core PUBLIC cxx_std_20)
