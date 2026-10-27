@@ -16,6 +16,37 @@ target_include_directories(thermal_core PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+set(DOTNET_HOST_DIR "" CACHE PATH
+    "Directory containing .NET native hosting files"
+)
+
+find_path(DOTNET_HOST_INCLUDE_DIR
+    NAMES nethost.h
+    HINTS "${DOTNET_HOST_DIR}"
+    REQUIRED
+)
+
+find_library(NETHOST_LIBRARY
+    NAMES nethost
+    HINTS "${DOTNET_HOST_DIR}"
+    REQUIRED
+)
+
+add_executable(native_host
+    hosting/NativeHost.cpp
+)
+
+target_compile_features(native_host PRIVATE cxx_std_20)
+
+target_include_directories(native_host PRIVATE
+    "${DOTNET_HOST_INCLUDE_DIR}"
+)
+
+target_link_libraries(native_host PRIVATE
+    "${NETHOST_LIBRARY}"
+    "${CMAKE_DL_LIBS}"
+)
+
 add_executable(thermal_app
     src/main.cpp
 )
