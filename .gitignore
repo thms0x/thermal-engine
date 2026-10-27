@@ -1,1 +1,3 @@
 build/
+managed/ThermalController/bin/
+managed/ThermalController/obj/
