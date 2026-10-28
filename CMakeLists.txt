@@ -25,18 +25,6 @@ target_include_directories(thermal_core PUBLIC
 )
 
 # --------------------------------------------------
-# Native simulation application
-# --------------------------------------------------
-
-add_executable(thermal_app
-    src/main.cpp
-)
-
-target_link_libraries(thermal_app PRIVATE
-    thermal_core
-)
-
-# --------------------------------------------------
 # .NET hosting dependencies
 # --------------------------------------------------
 
@@ -57,45 +45,45 @@ find_library(NETHOST_LIBRARY
 )
 
 # --------------------------------------------------
-# Managed object wrapper
+# Native .NET hosting library
 # --------------------------------------------------
 
-add_library(managed_controller STATIC
+add_library(dotnet_host STATIC
+    src/DotNetHost.cpp
     src/ManagedController.cpp
 )
 
-target_include_directories(managed_controller PUBLIC
-    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+target_include_directories(dotnet_host
+    PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    PRIVATE "${DOTNET_HOST_INCLUDE_DIR}"
 )
 
-# --------------------------------------------------
-# Native .NET host
-# --------------------------------------------------
-
-add_executable(native_host
-    hosting/NativeHost.cpp
-)
-
-target_include_directories(native_host PRIVATE
-    "${DOTNET_HOST_INCLUDE_DIR}"
-)
-
-target_link_libraries(native_host PRIVATE
-    managed_controller
+target_link_libraries(dotnet_host PUBLIC
     "${NETHOST_LIBRARY}"
     "${CMAKE_DL_LIBS}"
 )
 
 # --------------------------------------------------
-# Compiler warnings
+# Native simulation application
 # --------------------------------------------------
 
+add_executable(thermal_app
+    src/main.cpp
+)
+
+target_link_libraries(thermal_app PRIVATE
+    thermal_core
+    dotnet_host
+)
+
+# --------------------------------------------------
+# Compiler warnings
+# --------------------------------------------------
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     foreach(target IN ITEMS
         thermal_core
+        dotnet_host
         thermal_app
-        managed_controller
-        native_host
     )
         target_compile_options(${target} PRIVATE
             -Wall
