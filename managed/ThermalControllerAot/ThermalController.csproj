@@ -1,0 +1,22 @@
+﻿
+<Project Sdk="Microsoft.NET.Sdk">
+
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <!-- compile the C# code into a native shared library -->
+    <PublishAot>true</PublishAot>
+    <NativeLib>Shared</NativeLib>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <!-- reuse of the existing controller without duplicating it -->
+    <Compile Include="../ThermalController/ThermalController.cs"
+             Link="ThermalController.cs" />
+  </ItemGroup>
+
+</Project>

@@ -76,9 +76,53 @@ target_link_libraries(thermal_app PRIVATE
     dotnet_host
 )
 
+
+
+# --------------------------------------------------
+# Native AOT interoperability library
+# --------------------------------------------------
+
+add_library(native_aot_host STATIC
+    src/NativeAotHost.cpp
+    src/ManagedController.cpp
+)
+
+target_include_directories(native_aot_host PUBLIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+)
+
+# Required for dlopen() and dlsym()
+target_link_libraries(native_aot_host PUBLIC
+    "${CMAKE_DL_LIBS}"
+)
+
+# --------------------------------------------------
+# Native AOT test executable
+# --------------------------------------------------
+
+add_executable(native_aot_test
+    examples/native_aot/main.cpp
+)
+
+target_link_libraries(native_aot_test PRIVATE
+    native_aot_host
+)
+
 # --------------------------------------------------
 # Compiler warnings
 # --------------------------------------------------
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(native_aot_host PRIVATE
+        -Wall -Wextra -Wpedantic
+    )
+
+    target_compile_options(native_aot_test PRIVATE
+        -Wall -Wextra -Wpedantic
+    )
+endif()
+
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     foreach(target IN ITEMS
         thermal_core
