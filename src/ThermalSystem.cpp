@@ -22,7 +22,7 @@ double ThermalSystem::getTemperature() const {
 
 double ThermalSystem::step(double power, double dt)
 {
-    if (dt <= 0 && !std::isfinite(dt)) {
+    if (dt <= 0 || !std::isfinite(dt)) {
         throw std::invalid_argument("Time step must be positive and finite.");
     }
     if (!std::isfinite(power)) {
