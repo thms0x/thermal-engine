@@ -15,6 +15,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Native calculation kernel
 # --------------------------------------------------
 
+# Shared by the native, hostfxr and Native AOT apps
 add_library(thermal_core STATIC
     src/ThermalSystem.cpp
     src/SimulationRunner.cpp
@@ -25,9 +26,22 @@ target_include_directories(thermal_core PUBLIC
 )
 
 # --------------------------------------------------
+# Native simulation application
+# --------------------------------------------------
+
+add_executable(thermal_app
+    src/main.cpp
+)
+
+target_link_libraries(thermal_app PRIVATE
+    thermal_core
+)
+
+# --------------------------------------------------
 # .NET hosting dependencies
 # --------------------------------------------------
 
+# Directory containing nethost.h and libnethost
 set(DOTNET_HOST_DIR "" CACHE PATH
     "Directory containing .NET hosting headers and libraries"
 )
@@ -45,16 +59,17 @@ find_library(NETHOST_LIBRARY
 )
 
 # --------------------------------------------------
-# Native .NET hosting library
+# hostfxr interoperability library
 # --------------------------------------------------
 
+# Initializes CoreCLR and provides managed entry points
 add_library(dotnet_host STATIC
-    src/DotNetHost.cpp
-    src/ManagedController.cpp
+    examples/hostfxr/DotNetHost.cpp
+    examples/hostfxr/ManagedController.cpp
 )
 
 target_include_directories(dotnet_host
-    PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/examples/hostfxr"
     PRIVATE "${DOTNET_HOST_INCLUDE_DIR}"
 )
 
@@ -64,47 +79,46 @@ target_link_libraries(dotnet_host PUBLIC
 )
 
 # --------------------------------------------------
-# Native simulation application
+# hostfxr simulation application
 # --------------------------------------------------
 
-add_executable(thermal_app
-    src/main.cpp
+add_executable(thermal_hostfxr_app
+    examples/hostfxr/main.cpp
 )
 
-target_link_libraries(thermal_app PRIVATE
+target_link_libraries(thermal_hostfxr_app PRIVATE
     thermal_core
     dotnet_host
 )
-
-
 
 # --------------------------------------------------
 # Native AOT interoperability library
 # --------------------------------------------------
 
+# Loads Native AOT exports directly using dlopen/dlsym
 add_library(native_aot_host STATIC
-    src/NativeAotHost.cpp
-    src/ManagedController.cpp
+    examples/native_aot/NativeAotHost.cpp
+    examples/native_aot/ManagedController.cpp
 )
 
 target_include_directories(native_aot_host PUBLIC
-    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/examples/native_aot"
 )
 
-# Required for dlopen() and dlsym()
 target_link_libraries(native_aot_host PUBLIC
     "${CMAKE_DL_LIBS}"
 )
 
 # --------------------------------------------------
-# Native AOT test executable
+# Native AOT simulation application
 # --------------------------------------------------
 
-add_executable(native_aot_test
+add_executable(thermal_aot_app
     examples/native_aot/main.cpp
 )
 
-target_link_libraries(native_aot_test PRIVATE
+target_link_libraries(thermal_aot_app PRIVATE
+    thermal_core
     native_aot_host
 )
 
@@ -113,21 +127,13 @@ target_link_libraries(native_aot_test PRIVATE
 # --------------------------------------------------
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(native_aot_host PRIVATE
-        -Wall -Wextra -Wpedantic
-    )
-
-    target_compile_options(native_aot_test PRIVATE
-        -Wall -Wextra -Wpedantic
-    )
-endif()
-
-
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     foreach(target IN ITEMS
         thermal_core
-        dotnet_host
         thermal_app
+        dotnet_host
+        thermal_hostfxr_app
+        native_aot_host
+        thermal_aot_app
     )
         target_compile_options(${target} PRIVATE
             -Wall
@@ -136,3 +142,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         )
     endforeach()
 endif()
+
+# --------------------------------------------------
+# C++/CLI reference
+# --------------------------------------------------
+
+# Windows-only illustrative implementation.
+# Intentionally excluded from the Linux build.
+#
+# See examples/cppcli/README.md
