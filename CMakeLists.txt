@@ -197,6 +197,7 @@ target_compile_definitions(hostfxr_bench PRIVATE
 target_link_libraries(hostfxr_bench PRIVATE
     benchmark::benchmark
     dotnet_host
+    thermal_core
 )
 
 # --------------------------------------------------
@@ -214,6 +215,7 @@ target_compile_definitions(aot_bench PRIVATE
 target_link_libraries(aot_bench PRIVATE
     benchmark::benchmark
     native_aot_host
+    thermal_core
 )
 
 # --------------------------------------------------
@@ -229,6 +231,28 @@ gtest_discover_tests(hostfxr_tests
 gtest_discover_tests(aot_tests
     DISCOVERY_TIMEOUT 30
 )
+
+
+# --------------------------------------------------
+# Native C++ performance baseline
+# --------------------------------------------------
+
+add_executable(native_bench
+    tests/NativeControllerBenchmark.cpp
+)
+
+target_link_libraries(native_bench PRIVATE
+    benchmark::benchmark
+    thermal_core
+)
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(native_bench PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+    )
+endif()
 
 
 # --------------------------------------------------
