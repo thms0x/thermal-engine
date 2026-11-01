@@ -122,6 +122,115 @@ target_link_libraries(thermal_aot_app PRIVATE
     native_aot_host
 )
 
+
+# --------------------------------------------------
+# Google Test and Google Benchmark dependencies
+# --------------------------------------------------
+
+include(CTest)
+
+find_package(GTest CONFIG REQUIRED)
+find_package(benchmark CONFIG REQUIRED)
+
+# --------------------------------------------------
+# Shared test source directory
+# --------------------------------------------------
+
+set(THERMAL_TEST_DIR
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests"
+)
+
+# --------------------------------------------------
+# hostfxr correctness tests
+# --------------------------------------------------
+
+add_executable(hostfxr_tests
+    tests/ControllerTests.cpp
+)
+
+target_include_directories(hostfxr_tests PRIVATE
+    "${THERMAL_TEST_DIR}"
+)
+
+target_compile_definitions(hostfxr_tests PRIVATE
+    THERMAL_USE_HOSTFXR
+)
+
+target_link_libraries(hostfxr_tests PRIVATE
+    GTest::gtest_main
+    dotnet_host
+)
+
+# --------------------------------------------------
+# Native AOT correctness tests
+# --------------------------------------------------
+
+add_executable(aot_tests
+    tests/ControllerTests.cpp
+)
+
+target_include_directories(aot_tests PRIVATE
+    "${THERMAL_TEST_DIR}"
+)
+
+target_compile_definitions(aot_tests PRIVATE
+    THERMAL_USE_AOT
+)
+
+target_link_libraries(aot_tests PRIVATE
+    GTest::gtest_main
+    native_aot_host
+)
+
+# --------------------------------------------------
+# hostfxr performance benchmarks
+# --------------------------------------------------
+
+add_executable(hostfxr_bench
+    tests/ControllerBenchmark.cpp
+)
+
+target_compile_definitions(hostfxr_bench PRIVATE
+    THERMAL_USE_HOSTFXR
+)
+
+target_link_libraries(hostfxr_bench PRIVATE
+    benchmark::benchmark
+    dotnet_host
+)
+
+# --------------------------------------------------
+# Native AOT performance benchmarks
+# --------------------------------------------------
+
+add_executable(aot_bench
+    tests/ControllerBenchmark.cpp
+)
+
+target_compile_definitions(aot_bench PRIVATE
+    THERMAL_USE_AOT
+)
+
+target_link_libraries(aot_bench PRIVATE
+    benchmark::benchmark
+    native_aot_host
+)
+
+# --------------------------------------------------
+# Register correctness tests with CTest
+# --------------------------------------------------
+
+include(GoogleTest)
+
+gtest_discover_tests(hostfxr_tests
+    DISCOVERY_TIMEOUT 30
+)
+
+gtest_discover_tests(aot_tests
+    DISCOVERY_TIMEOUT 30
+)
+
+
 # --------------------------------------------------
 # Compiler warnings
 # --------------------------------------------------
