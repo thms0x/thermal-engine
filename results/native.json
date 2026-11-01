@@ -1,0 +1,163 @@
+{
+  "context": {
+    "date": "2026-11-01T19:15:11+01:00",
+    "host_name": "archlinux",
+    "executable": "./build-release/native_bench",
+    "num_cpus": 12,
+    "mhz_per_cpu": 4791,
+    "cpu_scaling_enabled": false,
+    "aslr_enabled": false,
+    "caches": [
+      {
+        "type": "Data",
+        "level": 1,
+        "size": 32768,
+        "num_sharing": 2
+      },
+      {
+        "type": "Instruction",
+        "level": 1,
+        "size": 32768,
+        "num_sharing": 2
+      },
+      {
+        "type": "Unified",
+        "level": 2,
+        "size": 1048576,
+        "num_sharing": 2
+      },
+      {
+        "type": "Unified",
+        "level": 3,
+        "size": 16777216,
+        "num_sharing": 12
+      }
+    ],
+    "load_avg": [0.422363,0.482422,0.462891],
+    "library_version": "v1.10.0",
+    "library_build_type": "release",
+    "json_schema_version": 1
+  },
+  "benchmarks": [
+    {
+      "name": "BM_CalculatePower_mean",
+      "family_index": 0,
+      "per_family_instance_index": 0,
+      "run_name": "BM_CalculatePower",
+      "run_type": "aggregate",
+      "repetitions": 10,
+      "threads": 1,
+      "aggregate_name": "mean",
+      "aggregate_unit": "time",
+      "iterations": 10,
+      "real_time": 2.1419063457529100e-01,
+      "cpu_time": 2.1344703625996489e-01,
+      "time_unit": "ns"
+    },
+    {
+      "name": "BM_CalculatePower_median",
+      "family_index": 0,
+      "per_family_instance_index": 0,
+      "run_name": "BM_CalculatePower",
+      "run_type": "aggregate",
+      "repetitions": 10,
+      "threads": 1,
+      "aggregate_name": "median",
+      "aggregate_unit": "time",
+      "iterations": 10,
+      "real_time": 2.1328772117089811e-01,
+      "cpu_time": 2.1255339382713703e-01,
+      "time_unit": "ns"
+    },
+    {
+      "name": "BM_CalculatePower_stddev",
+      "family_index": 0,
+      "per_family_instance_index": 0,
+      "run_name": "BM_CalculatePower",
+      "run_type": "aggregate",
+      "repetitions": 10,
+      "threads": 1,
+      "aggregate_name": "stddev",
+      "aggregate_unit": "time",
+      "iterations": 10,
+      "real_time": 3.6073069312862935e-03,
+      "cpu_time": 3.4685998567881614e-03,
+      "time_unit": "ns"
+    },
+    {
+      "name": "BM_CalculatePower_cv",
+      "family_index": 0,
+      "per_family_instance_index": 0,
+      "run_name": "BM_CalculatePower",
+      "run_type": "aggregate",
+      "repetitions": 10,
+      "threads": 1,
+      "aggregate_name": "cv",
+      "aggregate_unit": "percentage",
+      "iterations": 10,
+      "real_time": 1.6841571707554164e-02,
+      "cpu_time": 1.6250400650040547e-02,
+      "time_unit": "ns"
+    },
+    {
+      "name": "BM_FullSimulation_mean",
+      "family_index": 1,
+      "per_family_instance_index": 0,
+      "run_name": "BM_FullSimulation",
+      "run_type": "aggregate",
+      "repetitions": 10,
+      "threads": 1,
+      "aggregate_name": "mean",
+      "aggregate_unit": "time",
+      "iterations": 10,
+      "real_time": 7.6003085733890496e-01,
+      "cpu_time": 7.5766427414510429e-01,
+      "time_unit": "us"
+    },
+    {
+      "name": "BM_FullSimulation_median",
+      "family_index": 1,
+      "per_family_instance_index": 0,
+      "run_name": "BM_FullSimulation",
+      "run_type": "aggregate",
+      "repetitions": 10,
+      "threads": 1,
+      "aggregate_name": "median",
+      "aggregate_unit": "time",
+      "iterations": 10,
+      "real_time": 7.5560482290217668e-01,
+      "cpu_time": 7.5319022737891350e-01,
+      "time_unit": "us"
+    },
+    {
+      "name": "BM_FullSimulation_stddev",
+      "family_index": 1,
+      "per_family_instance_index": 0,
+      "run_name": "BM_FullSimulation",
+      "run_type": "aggregate",
+      "repetitions": 10,
+      "threads": 1,
+      "aggregate_name": "stddev",
+      "aggregate_unit": "time",
+      "iterations": 10,
+      "real_time": 1.5768818684367931e-02,
+      "cpu_time": 1.5461252971523671e-02,
+      "time_unit": "us"
+    },
+    {
+      "name": "BM_FullSimulation_cv",
+      "family_index": 1,
+      "per_family_instance_index": 0,
+      "run_name": "BM_FullSimulation",
+      "run_type": "aggregate",
+      "repetitions": 10,
+      "threads": 1,
+      "aggregate_name": "cv",
+      "aggregate_unit": "percentage",
+      "iterations": 10,
+      "real_time": 2.0747603248082943e-02,
+      "cpu_time": 2.0406469592312598e-02,
+      "time_unit": "us"
+    }
+  ]
+}
