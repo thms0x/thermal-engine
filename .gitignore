@@ -1,1 +1,4 @@
 build/
+.vscode/
+managed/ThermalController/bin/
+managed/ThermalController/obj/
